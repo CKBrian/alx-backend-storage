@@ -23,7 +23,8 @@ def get_ip_stats(nginx_coll):
         }
     ]
     cursor = nginx_coll.aggregate(pipeline)
-    return "\n".join(f"\t{doc.get('_id')}: {doc.get('count')}" for doc in cursor)
+    return "\n".join(f"\t{doc.get('_id')}: {doc.get('count')}"
+                     for doc in cursor)
 
 
 if __name__ == "__main__":
