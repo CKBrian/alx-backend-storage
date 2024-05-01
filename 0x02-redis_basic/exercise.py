@@ -6,6 +6,20 @@ import redis
 import uuid
 import sys
 from typing import Union, Callable, Optional
+from functools import wraps
+
+
+def count_calls(method: Callable) -> Callable:
+    """returns a Callable."""
+    @wraps(method)
+    def wrapper(self, *args, **kwargs):
+        """increments the count for key every time the method
+           is called and returns the value returned by the original
+           method"""
+        key = method.__qualname__
+        self._redis.incr(key)
+        return method(self, *args, **kwargs)
+    return wrapper
 
 
 class Cache:
@@ -38,6 +52,7 @@ class Cache:
         return int.from_bytes(self, sys.byteorder)
 
 
+    @count_calls
     def store(self, data: Union[int, float, str, bytes]) -> str:
         """returns a string
 
@@ -57,7 +72,7 @@ class Cache:
 if __name__ == "__main__":
     c = Cache()
     print(c.store("My Mother"))
-
+    print(f"{c.store.__name__}, {c.store.__doc__}, {c.store.__qualname__}")
     cache = Cache()
 
     TEST_CASES = {
