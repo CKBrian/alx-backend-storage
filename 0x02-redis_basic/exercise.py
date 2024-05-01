@@ -96,25 +96,3 @@ def replay(method: callable) -> str:
             "\n".join("Cache.store(*({},)) -> {}".format(inpt.decode('utf-8'),
                                                          outpt.decode('utf-8'))
                       for inpt, outpt in zip(input_lst, output_lst)))
-
-
-if __name__ == "__main__":
-    c = Cache()
-    print(c.store("My Mother"))
-    print(f"{c.store.__name__}, {c.store.__doc__}, {c.store.__qualname__}")
-    cache = Cache()
-
-    #TEST_CASES = {
-    #    b"foo": None,
-    #    123: int,
-    #    "name": str,
-    #    "bar": lambda d: d.decode("utf-8")
-    #}
-
-    #for value, fn in TEST_CASES.items():
-    #    key = cache.store(value)
-    #    assert cache.get(key, fn=fn) == value
-    cache.store("foo")
-    cache.store("bar")
-    cache.store(42)
-    print(replay(cache.store))
