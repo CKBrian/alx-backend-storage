@@ -22,6 +22,22 @@ def count_calls(method: Callable) -> Callable:
     return wrapper
 
 
+def call_history(method: Callable) -> Callable:
+    """returns a Callable."""
+    @wraps(method)
+    def wrapper(self, *args, **kwargs):
+        """ add its input parameters to one list in redis, and
+            store its output into another list
+        """
+        input_key = f"{method.__qualname__}:inputs"
+        output_key = f"{method.__qualname__}:outputs"
+        self._redis.rpush(input_key, *args)
+        res = method(self, *args, **kwargs)
+        self._redis.rpush(output_key, res)
+        return res
+    return wrapper
+
+
 class Cache:
     def __init__(self):
         """Initializes a redis Cache class"""
@@ -51,6 +67,7 @@ class Cache:
         return int.from_bytes(self, sys.byteorder)
 
     @count_calls
+    @call_history
     def store(self, data: Union[int, float, str, bytes]) -> str:
         """returns a string
 
