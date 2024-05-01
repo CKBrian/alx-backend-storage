@@ -46,11 +46,9 @@ class Cache:
         """parametrizes Cache.get with the string conversion function"""
         return self.decode("utf-8")
 
-
     def get_int(self):
         """parametrizes Cache.get with the int conversion function"""
         return int.from_bytes(self, sys.byteorder)
-
 
     @count_calls
     def store(self, data: Union[int, float, str, bytes]) -> str:
@@ -66,7 +64,6 @@ class Cache:
         key = str(uuid.uuid4())
         r.set(key, data)
         return key
-
 
 
 if __name__ == "__main__":
