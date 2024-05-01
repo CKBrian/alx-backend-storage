@@ -83,7 +83,7 @@ class Cache:
         return key
 
 
-def replay(method):
+def replay(method: callable) -> str:
     """display the history of calls of a particular function."""
     r = redis.Redis()
     input_key = f"{method.__qualname__}:inputs"
