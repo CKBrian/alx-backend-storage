@@ -36,7 +36,8 @@ def get_page(url: str) -> str:
     key = f"count:{url}"
     cache_key = f"cache:{url}"
     r.incr(key)
-    return requests.get(url).text
+    resp = requests.get(url)
+    return str(resp)
 
 
 if __name__ == "__main__":
