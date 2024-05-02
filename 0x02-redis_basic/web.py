@@ -25,7 +25,7 @@ def get_url_count(method: Callable) -> Callable:
         content = response.text
         print(content)
 
-        r.setex(cache_key, 10, content)
+        r.setex(cache_key, 10, str(content))
         return method(url)
 
     return wrapper
@@ -36,7 +36,7 @@ def get_page(url: str) -> str:
     key = f"count:{url}"
     cache_key = f"cache:{url}"
     r.incr(key)
-    return r.get(cache_key).decode("utf-8")
+    return requests.get(url).text
 
 
 if __name__ == "__main__":
