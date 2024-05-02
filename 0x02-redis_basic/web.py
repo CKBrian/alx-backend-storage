@@ -39,3 +39,9 @@ def get_page(url: str) -> str:
     r.incr(key)
     resp = requests.get(url)
     return str(resp)
+
+
+if __name__ == "__main__":
+    url = "http://slowwly.robertomurray.co.uk"
+    for _ in range(5):
+        print(get_page(url))
