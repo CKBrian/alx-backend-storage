@@ -83,16 +83,40 @@ class Cache:
         return key
 
 
-def replay(method: callable) -> str:
+def replay(method: Callable) -> str:
     """display the history of calls of a particular function."""
-    r = redis.Redis()
+    r = method.__self__
+    print(dir(method), r)
     input_key = f"{method.__qualname__}:inputs"
     output_key = f"{method.__qualname__}:outputs"
     key = f"{method.__qualname__}"
+
     count = f"Cache.store was called {int(r.get(key))} times:\n"
-    input_lst = r.lrange(input_key, 0, -1)
-    output_lst = r.lrange(output_key, 0, -1)
+    input_lst = [element.decode('utf-8')
+                 for element in r._redis.lrange(input_key, 0, -1)]
+    output_lst = [element.decode('utf-8')
+                  for element in r._redis.lrange(output_key, 0, -1)]
+
     return (count +
-            "\n".join("Cache.store(*({},)) -> {}".format(inpt.decode('utf-8'),
-                                                         outpt.decode('utf-8'))
+            "\n".join("Cache.store(*({},)) -> {}".format(str(inpt),
+                                                         str(outpt))
                       for inpt, outpt in zip(input_lst, output_lst)))
+
+
+if __name__ == "__main__":
+    cache = Cache()
+
+    # TEST_CASES = {
+    #     b"foo": None,
+    #     123: int,
+    #     "name": str,
+    #     "bar": lambda d: d.decode("utf-8")
+    # }
+
+    # for value, fn in TEST_CASES.items():
+    #     key = cache.store(value)
+    #     assert cache.get(key, fn=fn) == value
+    cache.store("foo")
+    cache.store("bar")
+    cache.store(42)
+    print(replay(cache.store))
