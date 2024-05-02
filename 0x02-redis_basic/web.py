@@ -30,6 +30,7 @@ def get_url_count(method: Callable) -> Callable:
 
     return wrapper
 
+
 @get_url_count
 def get_page(url: str) -> str:
     """Obtain the HTML content of a URL, """
