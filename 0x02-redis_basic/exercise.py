@@ -31,9 +31,9 @@ def call_history(method: Callable) -> Callable:
         """
         input_key = f"{method.__qualname__}:inputs"
         output_key = f"{method.__qualname__}:outputs"
-        self._redis.rpush(input_key, *args)
+        self._redis.rpush(input_key, str(args))
         res = method(self, *args, **kwargs)
-        self._redis.rpush(output_key, res)
+        self._redis.rpush(output_key, str(res))
         return res
     return wrapper
 
@@ -44,7 +44,8 @@ class Cache:
         self._redis = redis.Redis()
         self._redis.flushdb()
 
-    def get(self, key: str, fn: Optional[Callable] = None):
+    def get(self, key: str, fn: Optional[Callable] = None) \
+            -> Union[int, float, str, bytes]:
         """returns a string
 
             Args:
@@ -98,8 +99,8 @@ def replay(method: Callable) -> str:
                   for element in r._redis.lrange(output_key, 0, -1)]
 
     return (count +
-            "\n".join("Cache.store(*({},)) -> {}".format(str(inpt),
-                                                         str(outpt))
+            "\n".join("Cache.store(*({},)) -> {}".format(inpt,
+                                                         outpt)
                       for inpt, outpt in zip(input_lst, output_lst)))
 
 
